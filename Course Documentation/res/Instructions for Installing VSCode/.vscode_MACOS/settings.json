@@ -1,6 +1,0 @@
-{
-    "liveshare.allowGuestTaskControl": true,
-    "liveshare.allowGuestDebugControl": true,
-    "liveshare.publishWorkspaceInfo": true,
-    "liveshare.languages.allowGuestCommandControl": true
-}
