@@ -54,4 +54,5 @@ Output/ble_app_buttonless_dfu_pca10040_s132\ Release/Obj/nrf_log_default_backend
  C:\Users\joeyp\Desktop\Engineering\Cuitt\Development\nRF5_SDK_17.0.0_9d13099\components\libraries\log\src\nrf_log_internal.h \
  ../../../../../../components/libraries/log/nrf_log_types.h \
  ../../../../../../components/libraries/util/nrf_assert.h \
+ ../../../../../../components/libraries/log/nrf_log_backend_rtt.h \
  ../../../../../../components/libraries/log/nrf_log_backend_uart.h

@@ -112,6 +112,7 @@ Output/ble_app_buttonless_dfu_pca10040_s132\ Release/Obj/main.o: \
  ../../../../../../components/ble/common/ble_conn_state.h \
  ../../../../../../components/libraries/atomic/nrf_atomic.h \
  ../../../../../../components/ble/ble_services/ble_dfu/ble_dfu.h \
+ C:/Users/joeyp/Desktop/Engineering/Cuitt/Development/nRF5_SDK_17.0.0_9d13099/examples/ble_peripheral/ble_app_buttonless_dfu/pca10040/s132/ses/ble_cus.h \
  ../../../../../../components/ble/nrf_ble_gatt/nrf_ble_gatt.h \
  ../../../../../../components/ble/nrf_ble_qwr/nrf_ble_qwr.h \
  ../../../../../../components/libraries/fds/fds.h \

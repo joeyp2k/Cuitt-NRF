@@ -76,6 +76,7 @@
 #include "ble_advertising.h"
 #include "ble_conn_state.h"
 #include "ble_dfu.h"
+#include "ble_cus.h"
 #include "nrf_ble_gatt.h"
 #include "nrf_ble_qwr.h"
 #include "fds.h"
@@ -118,13 +119,15 @@
 
 NRF_BLE_GATT_DEF(m_gatt);                                                           /**< GATT module instance. */
 NRF_BLE_QWR_DEF(m_qwr);                                                             /**< Context for the Queued Write module.*/
-BLE_ADVERTISING_DEF(m_advertising);                                                 /**< Advertising module instance. */
+BLE_ADVERTISING_DEF(m_advertising);
+BLE_CUS_DEF(m_cus);                                                 /**< Advertising module instance. */
 
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                            /**< Handle of the current connection. */
 static void advertising_start(bool erase_bonds);                                    /**< Forward declaration of advertising start function */
 
 // YOUR_JOB: Use UUIDs for service(s) used in your application.
-static ble_uuid_t m_adv_uuids[] = {{BLE_UUID_DEVICE_INFORMATION_SERVICE, BLE_UUID_TYPE_BLE}};
+static ble_uuid_t m_adv_uuids[] = {{CUSTOM_SERVICE_UUID, BLE_UUID_TYPE_VENDOR_BEGIN}};
+//static ble_uuid_t m_adv_uuids[] = {{BLE_UUID_DEVICE_INFORMATION_SERVICE, BLE_UUID_TYPE_BLE}};
 
 /**@brief Handler for shutdown preparation.
  *
@@ -424,6 +427,14 @@ static void services_init(void)
 
     err_code = ble_dfu_buttonless_init(&dfus_init);
     APP_ERROR_CHECK(err_code);
+
+    // Initialize CUS Service init structure to zero.
+    ble_cus_init_t                     cus_init;
+    
+    memset(&cus_init, 0, sizeof(cus_init));
+	
+    err_code = ble_cus_init(&m_cus, &cus_init);
+    APP_ERROR_CHECK(err_code);	
 
     /* YOUR_JOB: Add code to initialize the services used by the application.
        uint32_t                           err_code;
@@ -850,8 +861,8 @@ int main(void)
     log_init();
 
     // Initialize the async SVCI interface to bootloader before any interrupts are enabled.
-    err_code = ble_dfu_buttonless_async_svci_init();
-    APP_ERROR_CHECK(err_code);
+//    err_code = ble_dfu_buttonless_async_svci_init();
+//   APP_ERROR_CHECK(err_code);
 
     timers_init();
     power_management_init();
@@ -860,8 +871,8 @@ int main(void)
     peer_manager_init();
     gap_params_init();
     gatt_init();
-    advertising_init();
     services_init();
+    advertising_init();
     conn_params_init();
 
     NRF_LOG_INFO("Buttonless DFU Application started.");

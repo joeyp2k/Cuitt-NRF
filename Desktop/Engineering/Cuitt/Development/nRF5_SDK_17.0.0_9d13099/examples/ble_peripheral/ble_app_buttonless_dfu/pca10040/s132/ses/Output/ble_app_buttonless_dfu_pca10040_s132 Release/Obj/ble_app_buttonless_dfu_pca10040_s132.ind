@@ -46,6 +46,7 @@
 "Output/ble_app_buttonless_dfu_pca10040_s132 Release/Obj/bsp_btn_ble.o"
 "Output/ble_app_buttonless_dfu_pca10040_s132 Release/Obj/main.o"
 "Output/ble_app_buttonless_dfu_pca10040_s132 Release/Obj/public_key.o"
+"Output/ble_app_buttonless_dfu_pca10040_s132 Release/Obj/ble_cus.o"
 "Output/ble_app_buttonless_dfu_pca10040_s132 Release/Obj/nrf_dfu_svci.o"
 "Output/ble_app_buttonless_dfu_pca10040_s132 Release/Obj/SEGGER_RTT.o"
 "Output/ble_app_buttonless_dfu_pca10040_s132 Release/Obj/SEGGER_RTT_Syscalls_SES.o"

@@ -2,7 +2,6 @@
 <session>
  <Bookmarks/>
  <Breakpoints groups="Breakpoints" active_group="Breakpoints">
-  <BreakpointListItem trigger="" line="870" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="4" filename="../../../main.c" useHWbreakpoint="false"/>
   <Exceptions set="MemManage;UsageFault_Coprocessor;UsageFault_CheckingError;UsageFault_StateError;BusFault;ExceptionEntryReturnFault;HardFault"/>
  </Breakpoints>
  <ExecutionProfileWindow/>
@@ -60,20 +59,15 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="426" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="1" top="408" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="99" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../../components/libraries/util/app_error_weak.c" selected="0" top="86" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="147" useTextEdit="1" openedFrom="C:/Users/joeyp/Desktop/Engineering/Cuitt/Development/nRF5_SDK_17.0.0_9d13099/examples/ble_peripheral/ble_app_buttonless_dfu/main.c" useBinaryEdit="0" left="0" path="../../../../../../components/ble/ble_services/ble_dfu/ble_dfu_unbonded.c" selected="0" top="134" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="72" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../../components/libraries/util/app_error.c" selected="0" top="59" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="1413" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../config/sdk_config.h" selected="0" top="1397" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="0" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../../components/ble/common/ble_srv_common.c" selected="0" top="60" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="287" useTextEdit="1" openedFrom="C:/Users/joeyp/Desktop/Engineering/Cuitt/Development/nRF5_SDK_17.0.0_9d13099/examples/ble_peripheral/ble_app_buttonless_dfu/main.c" useBinaryEdit="0" left="0" path="../../../../../../components/ble/ble_services/ble_dfu/ble_dfu.c" selected="0" top="271" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="78" useTextEdit="1" openedFrom="C:/Users/joeyp/Desktop/Engineering/Cuitt/Development/nRF5_SDK_17.0.0_9d13099/components/ble/ble_services/ble_dfu/ble_dfu.c" useBinaryEdit="0" left="0" path="../../../../../../components/ble/ble_services/ble_dfu/ble_dfu.h" selected="0" top="142" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="0" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Output/Release/Exe/ble_app_buttonless_dfu_pca10040_s132.hex" selected="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="4" y="466" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="0" top="434" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="10" y="2459" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../config/sdk_config.h" selected="0" top="2168" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="287" useTextEdit="1" openedFrom="C:/Users/joeyp/Desktop/Engineering/Cuitt/Development/nRF5_SDK_17.0.0_9d13099/examples/ble_peripheral/ble_app_buttonless_dfu/main.c" useBinaryEdit="0" left="0" path="../../../../../../components/ble/ble_services/ble_dfu/ble_dfu.c" selected="0" top="76" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="2" y="145" useTextEdit="1" openedFrom="C:/Users/joeyp/Desktop/Engineering/Cuitt/Development/nRF5_SDK_17.0.0_9d13099/examples/ble_peripheral/ble_app_buttonless_dfu/main.c" useBinaryEdit="0" left="0" path="../../../../../../components/ble/ble_services/ble_dfu/ble_dfu.h" selected="0" top="62" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="126" useTextEdit="1" openedFrom="C:/Users/joeyp/Desktop/Engineering/Cuitt/Development/nRF5_SDK_17.0.0_9d13099/examples/ble_peripheral/ble_app_buttonless_dfu/main.c" useBinaryEdit="0" left="0" path="../../../../../../components/ble/ble_advertising/ble_advertising.h" selected="0" top="110" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="446" useTextEdit="1" openedFrom="C:/Users/joeyp/Desktop/Engineering/Cuitt/Development/nRF5_SDK_17.0.0_9d13099/examples/ble_peripheral/ble_app_buttonless_dfu/main.c" useBinaryEdit="0" left="0" path="../../../../../../components/softdevice/s132/headers/ble_gap.h" selected="0" top="430" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="167" useTextEdit="1" openedFrom="C:/Users/joeyp/Desktop/Engineering/Cuitt/Development/nRF5_SDK_17.0.0_9d13099/examples/ble_peripheral/ble_app_buttonless_dfu/main.c" useBinaryEdit="0" left="0" path="../../../../../../components/ble/nrf_ble_qwr/nrf_ble_qwr.h" selected="0" top="151" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="195" useTextEdit="1" openedFrom="C:/Users/joeyp/Desktop/Engineering/Cuitt/Development/nRF5_SDK_17.0.0_9d13099/examples/ble_peripheral/ble_app_buttonless_dfu/main.c" useBinaryEdit="0" left="0" path="../../../../../../components/softdevice/s132/headers/ble_types.h" selected="0" top="180" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="349" useTextEdit="1" openedFrom="C:/Users/joeyp/Desktop/Engineering/Cuitt/Development/nRF5_SDK_17.0.0_9d13099/examples/ble_peripheral/ble_app_buttonless_dfu/main.c" useBinaryEdit="0" left="0" path="../../../../../../components/ble/common/ble_srv_common.h" selected="0" top="334" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="81" y="71" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="ble_cus.h" selected="0" top="46" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="1" y="152" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="ble_cus.c" selected="1" top="132" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="99" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../../components/libraries/util/app_error_weak.c" selected="0" top="86" codecName=""/>
  </Files>
- <ARMCrossStudioWindow activeProject="ble_app_buttonless_dfu_pca10040_s132" fileDialogDefaultFilter="*.c" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="C:/Users/joeyp/Desktop/Engineering/Cuitt/Development/nRF5_SDK_17.0.0_9d13099/external/micro-ecc/micro-ecc" debugSearchPath="" autoConnectCapabilities="3199"/>
+ <ARMCrossStudioWindow activeProject="ble_app_buttonless_dfu_pca10040_s132" fileDialogDefaultFilter="*.c" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="C:/Users/joeyp/Desktop/Engineering/Cuitt/Development/nRF5_SDK_17.0.0_9d13099/external/micro-ecc/micro-ecc" debugSearchPath="" autoConnectCapabilities="3711"/>
 </session>
