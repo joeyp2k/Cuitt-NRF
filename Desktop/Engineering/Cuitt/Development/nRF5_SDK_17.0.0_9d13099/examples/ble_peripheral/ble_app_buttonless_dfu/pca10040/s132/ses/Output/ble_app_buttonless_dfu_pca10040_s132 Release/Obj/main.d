@@ -133,4 +133,13 @@ Output/ble_app_buttonless_dfu_pca10040_s132\ Release/Obj/main.o: \
  C:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 4.52b/include/stdlib.h \
  ../../../../../../components/libraries/balloc/nrf_balloc.h \
  ../../../../../../components/libraries/log/nrf_log_default_backends.h \
- ../../../../../../components/libraries/bootloader/nrf_bootloader_info.h
+ ../../../../../../components/libraries/bootloader/nrf_bootloader_info.h \
+ ../../../../../../integration/nrfx/legacy/nrf_drv_twi.h \
+ ../../../../../../modules/nrfx/drivers/include/nrfx_twim.h \
+ ../../../../../../modules/nrfx/drivers/include/nrfx_twi_twim.h \
+ ../../../../../../modules/nrfx/hal/nrf_twim.h \
+ ../../../../../../modules/nrfx/drivers/include/nrfx_twi.h \
+ ../../../../../../modules/nrfx/hal/nrf_twi.h \
+ ../../../../../../integration/nrfx/legacy/nrf_drv_rtc.h \
+ ../../../../../../modules/nrfx/drivers/include/nrfx_rtc.h \
+ ../../../../../../modules/nrfx/hal/nrf_rtc.h

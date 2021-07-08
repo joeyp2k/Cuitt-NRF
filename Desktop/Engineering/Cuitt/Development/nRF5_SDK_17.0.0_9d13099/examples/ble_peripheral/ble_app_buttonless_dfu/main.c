@@ -87,6 +87,8 @@
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 #include "nrf_bootloader_info.h"
+#include "nrf_drv_twi.h"
+#include "nrf_drv_rtc.h"
 
 #define DEVICE_NAME                     "Nordic_Buttonless"                         /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME               "NordicSemiconductor"                       /**< Manufacturer. Will be passed to Device Information Service. */
@@ -112,10 +114,21 @@
 #define SEC_PARAM_IO_CAPABILITIES       BLE_GAP_IO_CAPS_NONE                        /**< No I/O capabilities. */
 #define SEC_PARAM_OOB                   0                                           /**< Out Of Band data not available. */
 #define SEC_PARAM_MIN_KEY_SIZE          7                                           /**< Minimum encryption key size. */
-#define SEC_PARAM_MAX_KEY_SIZE          16                                          /**< Maximum encryption key size. */
+#define SEC_PARAM_MAX_KEY_SIZE          16                                          /**< Maximum encryption key size. */ 
+
+#define BLUE_LED                        BSP_BOARD_LED_0                         /**< Is on when device is advertising. */
+#define RED_LED                         BSP_BOARD_LED_1                         /**< Is on when device has connected. */
+#define GREEN_LED                       BSP_BOARD_LED_2 
+
+/* TWI instance ID. */
+#define TWI_INSTANCE_ID     0
+
+#define RTC_ADDRESS          (0x68U)
+uint8_t sec, min, hr, day, date, month, year;
+
+const nrf_drv_rtc_t rtc = NRF_DRV_RTC_INSTANCE(2);
 
 #define DEAD_BEEF                       0xDEADBEEF                                  /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
-
 
 NRF_BLE_GATT_DEF(m_gatt);                                                           /**< GATT module instance. */
 NRF_BLE_QWR_DEF(m_qwr);                                                             /**< Context for the Queued Write module.*/
@@ -125,9 +138,59 @@ BLE_CUS_DEF(m_cus);                                                 /**< Adverti
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                            /**< Handle of the current connection. */
 static void advertising_start(bool erase_bonds);                                    /**< Forward declaration of advertising start function */
 
+#define BUTTON_DETECTION_DELAY          APP_TIMER_TICKS(50)   
+
 // YOUR_JOB: Use UUIDs for service(s) used in your application.
 static ble_uuid_t m_adv_uuids[] = {{CUSTOM_SERVICE_UUID, BLE_UUID_TYPE_VENDOR_BEGIN}};
 //static ble_uuid_t m_adv_uuids[] = {{BLE_UUID_DEVICE_INFORMATION_SERVICE, BLE_UUID_TYPE_BLE}};
+
+//global variables
+bool connected = false;
+
+unsigned char daynum = 0;//day index
+unsigned char weeknum = 1;//week index
+volatile unsigned int click = 0;//click counter for BLE pairing
+uint16_t Draw_length = 0;//the length of time of the draw
+uint16_t Draw_length_last;
+uint16_t Draw_length_average_3 = 0;//the average time taking the last 3 draws
+uint16_t Draw_length_average = 0;//the average time taking a draw
+uint16_t Draw_length_average_t = 0;//the average time taking a draw today (used for total average)
+unsigned char Buffer = 100;//the current buffer for draws taken in close intervals
+unsigned char T = 1;//the max draws that can be taken before the session counter incrementns for draws taken in close intervals: estimated from average hits taken in 3 hour intervals
+unsigned int DCT = 0;//the amount of draws taken
+unsigned int SCT = 0;//the amount of sessions
+unsigned int SCT_average = 0;//daily sessions average
+unsigned int DCT_average = 0;//daily count average
+uint16_t Draw_length_total = 0;//todays total time taking draws
+uint16_t DLT_average = 0;//the average total time taking draws each daysigned int DL_average = 0;//average draw time taking a draw
+uint32_t Time_between = 0;//time between sessions
+uint32_t Time_between_average_3 = 0;//average time between last three sessions
+uint32_t Time_between_average = 0;//average time between sessions
+uint32_t Time_between_t = 0;
+uint32_t Wait_period;// = 16/SCT_average;//calculated wait period between seshes to make progress
+unsigned int Over_count;//the amount of hits taken after today's draw total surpasses the draw length total average
+unsigned int Relapse_code;//whether the user is relapsing or not (1 or 0)
+unsigned int Suggestion;//the suggested draw length
+unsigned int Relapse_count;//the amount of hits taken with a negative progress code
+unsigned int Progress_count;//the amount of hits taken with a positive progress code
+unsigned int Progress_code;//qualitative value determining how much the user is progressing
+unsigned int Progress;//whether positive, negative, or neutral
+unsigned int Prog_ranking;//the ranking of the hit length or wait period in successfully making progress towards the user's goal
+float Decay = 0.95;//the seconds the user is expected to reduce their average draw length by
+unsigned int Session_interval = 500;//interval after hit for session count increment: if weed setting, 2*60*60 and if nicotine setting, 1
+unsigned int Three_average_array[3][2] = {0};
+bool voltage_lock = false;
+bool auto_lock = false;
+unsigned int Calculation_array[7][5] = {0};
+unsigned char z;
+volatile unsigned int dc = 0;//milliseconds
+volatile unsigned char Button = 0;//button pressed value
+volatile unsigned char Button_b = 0;//button pressed value b
+
+uint8_t tx_data[8] = {0x00};
+
+#define DRAW_BUTTON                BSP_BUTTON_0    
+#define STATBUTTON_BUTTON          BSP_BUTTON_1  
 
 /**@brief Handler for shutdown preparation.
  *
@@ -588,10 +651,12 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
     switch (p_ble_evt->header.evt_id)
     {
         case BLE_GAP_EVT_DISCONNECTED:
+            connected = false;
             // LED indication will be changed when advertising starts.
             break;
 
         case BLE_GAP_EVT_CONNECTED:
+            connected = true;
             err_code = bsp_indication_set(BSP_INDICATE_CONNECTED);
             APP_ERROR_CHECK(err_code);
             m_conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
@@ -711,41 +776,418 @@ static void delete_bonds(void)
  *
  * @param[in]   event   Event generated when button is pressed.
  */
+
 static void bsp_event_handler(bsp_event_t event)
 {
     uint32_t err_code;
+    if(connected == false){ 
+        switch (event)
+        {
+            case BSP_EVENT_SLEEP:
+                NRF_LOG_INFO("SLEEP");
+                sleep_mode_enter();
+                break; // BSP_EVENT_SLEEP
 
-    switch (event)
-    {
-        case BSP_EVENT_SLEEP:
-            sleep_mode_enter();
-            break; // BSP_EVENT_SLEEP
-
-        case BSP_EVENT_DISCONNECT:
-            err_code = sd_ble_gap_disconnect(m_conn_handle,
-                                             BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
-            if (err_code != NRF_ERROR_INVALID_STATE)
-            {
-                APP_ERROR_CHECK(err_code);
-            }
-            break; // BSP_EVENT_DISCONNECT
-
-        case BSP_EVENT_WHITELIST_OFF:
-            if (m_conn_handle == BLE_CONN_HANDLE_INVALID)
-            {
-                err_code = ble_advertising_restart_without_whitelist(&m_advertising);
+            case BSP_EVENT_DISCONNECT:
+                NRF_LOG_INFO("DISCONNECT");
+                err_code = sd_ble_gap_disconnect(m_conn_handle,
+                                                 BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
                 if (err_code != NRF_ERROR_INVALID_STATE)
                 {
                     APP_ERROR_CHECK(err_code);
                 }
-            }
-            break; // BSP_EVENT_KEY_0
+                break; // BSP_EVENT_DISCONNECT
 
+            case BSP_EVENT_WHITELIST_OFF:
+                NRF_LOG_INFO("RESET");
+                if (m_conn_handle == BLE_CONN_HANDLE_INVALID)
+                {
+                    err_code = ble_advertising_restart_without_whitelist(&m_advertising);
+                    if (err_code != NRF_ERROR_INVALID_STATE)
+                    {
+                        APP_ERROR_CHECK(err_code);
+                    }
+                }
+                break; // BSP_EVENT_KEY_0
+
+            default:
+             NRF_LOG_INFO("DEFAULT");
+                break;
+        }
+    }
+    /*
+    else{
+        switch (event)
+            {
+                case BSP_EVENT_SLEEP:
+                    NRF_LOG_INFO("SLEEP");
+                    break; // BSP_EVENT_SLEEP
+
+                case BSP_EVENT_DISCONNECT:
+                    NRF_LOG_INFO("DISCONNECT");
+                    break; // BSP_EVENT_DISCONNECT
+
+                case BSP_EVENT_WHITELIST_OFF:
+                    NRF_LOG_INFO("RESET");
+                    break; // BSP_EVENT_KEY_0
+
+                default:
+                 NRF_LOG_INFO("DEFAULT");
+                    break;
+            }
+        }
+        */
+}
+
+const nrf_drv_twi_t twi = NRF_DRV_TWI_INSTANCE(1);
+
+void twi_init (void)
+{
+    ret_code_t err_code;
+
+    const nrf_drv_twi_config_t twi_rtc_config = {
+       .scl                = ARDUINO_SCL_PIN,
+       .sda                = ARDUINO_SDA_PIN,
+       .frequency          = NRF_DRV_TWI_FREQ_100K,
+       .interrupt_priority = APP_IRQ_PRIORITY_HIGH,
+       .clear_bus_init     = false
+    };
+
+    err_code = nrf_drv_twi_init(&twi, &twi_rtc_config, NULL, NULL);
+    APP_ERROR_CHECK(err_code);
+
+    nrf_drv_twi_enable(&twi);
+}
+
+uint32_t current_time = 0;
+uint32_t current_time_b;
+
+//Convert BCD in the real time clock to decimal
+uint8_t bcdToDec(uint8_t val)
+{ 
+    return( (val/16*10) + (val%16) );
+}
+static void button_event_handler(uint8_t pin_no, uint8_t button_action)
+{
+    ret_code_t err_code;
+    uint8_t arr[14];
+
+    switch (pin_no)
+    {
+        case DRAW_BUTTON:
+            NRF_LOG_INFO("Send button state change.");
+            Button = 1 - Button;
+            printf("Button: %d\n", Button);
+            if(Button == 1){
+                nrf_drv_rtc_enable(&rtc);
+                nrf_drv_rtc_tick_enable(&rtc, true);
+                z = 0;
+                //take current time
+                
+                uint8_t addr[1] = {0x00};
+                err_code = nrf_drv_twi_tx(&twi, RTC_ADDRESS, addr, 1, false);
+                APP_ERROR_CHECK(err_code);
+                err_code = nrf_drv_twi_rx(&twi, RTC_ADDRESS, tx_data, sizeof(tx_data));
+                APP_ERROR_CHECK(err_code);
+                for(uint32_t i = 0; i <= 6; i++){
+                    tx_data[i] = bcdToDec(tx_data[i]);
+                    printf("0x%02x %d\n", i, tx_data[i]);
+                }
+                current_time = tx_data[0]+tx_data[1]*60+tx_data[2]*60*60+tx_data[3]*24*60*60;
+                if(Time_between >= Session_interval){
+                    if(Buffer == T){
+                        Buffer = 0;
+                        DCT++;
+                        SCT++;
+                    }
+                    else{
+                        DCT++;
+                        Buffer++;
+                    }
+                }
+                else
+                {
+                    DCT++;
+                    SCT++;
+                }
+            }
+            else{
+                nrf_drv_rtc_disable(&rtc);
+                nrf_drv_rtc_tick_disable(&rtc);
+                //negate count for miniscule draws to maintain integrity of suggestion
+                if(Draw_length < 400){
+                DCT--;
+                SCT--;
+                }
+                //take current time
+                
+                uint8_t addr[1] = {0x00};
+                err_code = nrf_drv_twi_tx(&twi, RTC_ADDRESS, addr, 1, false);
+                APP_ERROR_CHECK(err_code);
+                err_code = nrf_drv_twi_rx(&twi, RTC_ADDRESS, tx_data, sizeof(tx_data));
+                APP_ERROR_CHECK(err_code);
+                for(uint32_t i = 0; i <= 6; i++){
+                    tx_data[i] = bcdToDec(tx_data[i]);
+                    printf("0x%02x %d\n", i, tx_data[i]);
+                }
+                current_time = tx_data[0]+tx_data[1]*60+tx_data[2]*60*60+tx_data[3]*24*60*60;
+                //compare with last time taken
+                if(current_time_b == 0){
+                    Time_between = 0;
+                }else{
+                    Time_between = current_time - current_time_b;
+                }
+                printf("Time 1: %lu\n",current_time);
+                printf("Time 2: %lu\n",current_time_b);
+                printf("Time Between: %lu\n",Time_between);
+                current_time_b = current_time;
+                bsp_board_led_off(RED_LED);
+                bsp_board_led_off(BLUE_LED);
+                bsp_board_led_off(GREEN_LED);
+
+                static signed char c = -1;
+                static unsigned char a = 0;//three count index
+                if(c == 2){
+                    //do nothing
+                }
+                else
+                {
+                    c++;
+                }
+                if(a == 3){
+                a = 0;
+                }
+
+                Draw_length_total += Draw_length;
+
+                Calculation_array[daynum][0] = Draw_length_total;
+                DLT_average = 0;
+                for(char i = 0; i <= daynum; i++){
+                    DLT_average += Calculation_array[i][0];
+                }
+                DLT_average /= (daynum + 1);
+
+                Three_average_array[a][0] = Draw_length;
+                Draw_length_average_3 = 0;
+                for(char i = 0; i <= c; i++){
+                    Draw_length_average_3 += Three_average_array[i][0];
+                }
+                Draw_length_average_3 /= (c + 1);
+
+                Three_average_array[a][1] = Time_between;
+                Time_between_average_3 = 0;
+                for(int i = 0; i <= c; i++){
+                    Time_between_average_3 += Three_average_array[i][1];
+                }
+                Time_between_average_3 /= (c + 1);
+
+                a++;
+
+                Calculation_array[daynum][1] = SCT;
+                SCT_average = 0;
+                for(char i = 0; i <= daynum; i++){
+                    SCT_average += Calculation_array[i][1];
+                }
+                SCT_average /= (daynum + 1);
+
+                Calculation_array[daynum][2] = DCT;
+                DCT_average = 0;
+                for(char i = 0; i <= daynum; i++){
+                    DCT_average += Calculation_array[i][2];
+                }
+                DCT_average /= (daynum + 1);
+
+                Draw_length_average_t += Draw_length;
+
+                Calculation_array[daynum][3] = Draw_length_average_t;
+                Draw_length_average_t = 0;
+                for(char i = 0; i <= daynum; i++){
+                    Draw_length_average_t += Calculation_array[i][3];
+                }
+                Draw_length_average = Draw_length_average_t/DCT;
+
+                Time_between_t += Time_between;
+
+                Calculation_array[daynum][4] = Time_between_t;
+                Time_between_t = 0;
+                for(char i = 0; i <= daynum; i++){
+                    Time_between_t += Calculation_array[i][4];
+                }
+                Time_between_average = Time_between_t/SCT;
+
+                Wait_period = 16/SCT_average;
+    
+                Suggestion = DLT_average/DCT_average * Decay;//FIX SUGGESITON TOO SMALL
+                
+                printf("Draw length for this draw: %d\n", Draw_length);
+                printf("Current time: %d\n", current_time);
+                /*
+                printf("Draws today: %d\n", DCT);
+                printf("Sessions today: %d\n", SCT);
+                printf("Draw length for this draw: %d\n", Draw_length);
+                printf("Draw length total for today: %d\n", Draw_length_total);
+                printf("Time between this draw and the last: %d\n", Time_between);
+                printf("Average amount of sesions a day: %d\n", SCT_average);
+                printf("Average amount of draws a day: %d\n", DCT_average);
+                printf("Average draw length for individual draws: %d\n", Draw_length_average);
+                printf("Average length of the last three draws: %d\n", Draw_length_average_3);
+                printf("Average draw length total for all days: %d\n", DLT_average);
+                printf("Average time between the past three draws: %d\n", Time_between_average_3);
+                printf("Average time between draws: %d\n", Time_between_average);
+                printf("Suggested wait period between draws: %d\n", Wait_period);
+                printf("Suggested draw length: %d\n", Suggestion);
+                */
+                arr[0] = current_time >> 24;
+                arr[1] = current_time >> 16;
+                arr[2] = current_time >> 8;
+                arr[3] = current_time;
+
+                arr[4] = Draw_length >> 8;
+                arr[5] = Draw_length;
+
+                arr[6] = DCT >> 8;
+                arr[7] = DCT;
+
+                arr[8] = SCT >> 8;
+                arr[9] = SCT;
+
+                dc = 0;
+                Draw_length = 0;
+
+                printf("__________BLE transmit attempt___________\n");
+                if(connected == true){
+                    err_code = ble_lbs_on_button_change(m_conn_handle, &m_cus, arr);
+                    printf("BLE transmit complete\n");
+                    if (err_code != NRF_SUCCESS &&
+                    err_code != BLE_ERROR_INVALID_CONN_HANDLE &&
+                    err_code != NRF_ERROR_INVALID_STATE &&
+                    err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING)
+                    {
+                        APP_ERROR_CHECK(err_code);
+                    }
+                }
+                else{
+                    printf("Store to stack");
+                    //store to stack
+                }
+            }            
+            break;
+        case STATBUTTON_BUTTON:
+            Button_b = 1 - Button_b;
+            printf("Button B: %d\n", Button_b);
+            nrf_drv_rtc_enable(&rtc);
+            nrf_drv_rtc_tick_enable(&rtc,true);
+            //Current_time();
+            while(dc <= 3000){
+                if(Draw_length_total >= DLT_average){
+                    bsp_board_led_on(RED_LED);
+                }
+                else if(Time_between <= Wait_period){
+                    bsp_board_led_on(RED_LED);
+                }
+                else{
+                    bsp_board_led_on(BLUE_LED);
+                }
+            }
+            bsp_board_led_off(RED_LED);
+            bsp_board_led_off(BLUE_LED);
+            bsp_board_led_off(GREEN_LED);
+            nrf_drv_rtc_disable(&rtc);
+            nrf_drv_rtc_tick_disable(&rtc);
+            dc = 0;
+            break;
         default:
+            APP_ERROR_HANDLER(pin_no);
             break;
     }
 }
 
+
+static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
+{
+    if (int_type == NRF_DRV_RTC_INT_TICK)
+    {
+        dc = dc + 100;
+        printf("tick: %d\n",dc);
+    }
+    if(Button == 1){
+        Draw_length = dc;
+        printf("Draw Length: %dms\n", Draw_length);
+        if(Draw_length_total >= DLT_average){
+            printf("Exceeding today's total\n");
+            bsp_board_led_on(RED_LED);
+            if(voltage_lock = 1){
+                //Lock voltage
+                printf("Voltage Lock Enabled\n");
+            }
+        }else if(Time_between <= Wait_period){
+            printf("Wait longer to take a hit\n");
+            bsp_board_led_on(RED_LED);
+            if(voltage_lock = 1){
+                //Lock voltage
+                printf("Voltage Lock Enabled\n");
+            }
+        }else if(Draw_length >= Suggestion - 3){
+            printf("Stop Suggested\n");
+            bsp_board_led_on(BLUE_LED);
+            if(auto_lock = 1){
+                if(Draw_length >= Suggestion){
+                    printf("Auto Suggestion Lock Enabled\n");
+                    //Lock voltage
+                    bsp_board_led_off(BLUE_LED);
+                    bsp_board_led_on(RED_LED);
+                }
+            }
+            else if(Draw_length >= Draw_length_average){
+                printf("Draw length longer than average\n");
+                bsp_board_led_off(BLUE_LED);
+                bsp_board_led_on(RED_LED);
+                if(voltage_lock = 1){
+                    //Lock voltage
+                    printf("Voltage Lock Enabled\n");
+                }
+            }
+        }
+    }
+}
+
+static void lfclk_config(void)
+{
+    ret_code_t err_code = nrf_drv_clock_init();
+    APP_ERROR_CHECK(err_code);
+
+    nrf_drv_clock_lfclk_request(NULL);
+}
+
+static void rtc_config(void)
+{
+    uint32_t err_code;
+
+    //Initialize RTC instance
+    nrf_drv_rtc_config_t config = NRF_DRV_RTC_DEFAULT_CONFIG;
+    config.prescaler = 3276;//100ms RTCoutner
+    err_code = nrf_drv_rtc_init(&rtc, &config, rtc_handler);
+    APP_ERROR_CHECK(err_code);
+}
+
+static void buttons_init(void)
+{
+    ret_code_t err_code;
+
+    //The array must be static because a pointer to it will be saved in the button handler module.
+    static app_button_cfg_t buttons[] =
+    {
+        {BSP_BUTTON_0, false, BUTTON_PULL, button_event_handler}
+    };
+
+    err_code = app_button_init(buttons, ARRAY_SIZE(buttons),
+                               BUTTON_DETECTION_DELAY);
+    APP_ERROR_CHECK(err_code);
+
+    err_code = app_button_enable();
+
+    APP_ERROR_CHECK(err_code);
+}
 
 /**@brief Function for initializing the Advertising functionality.
  */
@@ -861,12 +1303,12 @@ int main(void)
     log_init();
 
     // Initialize the async SVCI interface to bootloader before any interrupts are enabled.
-//    err_code = ble_dfu_buttonless_async_svci_init();
-//   APP_ERROR_CHECK(err_code);
-
+    //    err_code = ble_dfu_buttonless_async_svci_init();
+    //   APP_ERROR_CHECK(err_code);
     timers_init();
     power_management_init();
-    buttons_leds_init(&erase_bonds);
+    //buttons_leds_init(&erase_bonds);
+    buttons_init();
     ble_stack_init();
     peer_manager_init();
     gap_params_init();
@@ -879,8 +1321,12 @@ int main(void)
 
     // Start execution.
     application_timers_start();
+    rtc_config();
+    twi_init();
+    nrf_drv_rtc_disable(&rtc);
+    nrf_drv_rtc_tick_disable(&rtc);
     advertising_start(erase_bonds);
-
+    
     // Enter main loop.
     for (;;)
     {

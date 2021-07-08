@@ -344,6 +344,173 @@
 #define NRFX_CLOCK_CONFIG_DEBUG_COLOR 0
 #endif
 
+
+// <e> RTC_ENABLED - nrf_drv_rtc - RTC peripheral driver - legacy layer
+//==========================================================
+#ifndef RTC_ENABLED
+#define RTC_ENABLED 1
+#endif
+// <o> RTC_DEFAULT_CONFIG_FREQUENCY - Frequency  <16-32768> 
+
+
+#ifndef RTC_DEFAULT_CONFIG_FREQUENCY
+#define RTC_DEFAULT_CONFIG_FREQUENCY 32768
+#endif
+
+// <q> RTC_DEFAULT_CONFIG_RELIABLE  - Ensures safe compare event triggering
+ 
+
+#ifndef RTC_DEFAULT_CONFIG_RELIABLE
+#define RTC_DEFAULT_CONFIG_RELIABLE 0
+#endif
+
+// <o> RTC_DEFAULT_CONFIG_IRQ_PRIORITY  - Interrupt priority
+ 
+
+// <i> Priorities 0,2 (nRF51) and 0,1,4,5 (nRF52) are reserved for SoftDevice
+// <0=> 0 (highest) 
+// <1=> 1 
+// <2=> 2 
+// <3=> 3 
+// <4=> 4 
+// <5=> 5 
+// <6=> 6 
+// <7=> 7 
+
+#ifndef RTC_DEFAULT_CONFIG_IRQ_PRIORITY
+#define RTC_DEFAULT_CONFIG_IRQ_PRIORITY 6
+#endif
+
+// <q> RTC0_ENABLED  - Enable RTC0 instance
+ 
+
+#ifndef RTC0_ENABLED
+#define RTC0_ENABLED 0
+#endif
+
+// <q> RTC1_ENABLED  - Enable RTC1 instance
+ 
+
+#ifndef RTC1_ENABLED
+#define RTC1_ENABLED 0
+#endif
+
+// <q> RTC2_ENABLED  - Enable RTC2 instance
+ 
+
+#ifndef RTC2_ENABLED
+#define RTC2_ENABLED 1
+#endif
+
+// <o> NRF_MAXIMUM_LATENCY_US - Maximum possible time[us] in highest priority interrupt 
+#ifndef NRF_MAXIMUM_LATENCY_US
+#define NRF_MAXIMUM_LATENCY_US 2000
+#endif
+
+// </e>
+
+// </e>
+
+// <e> NRFX_TWI_ENABLED - nrfx_twi - TWI peripheral driver
+//==========================================================
+#ifndef NRFX_TWI_ENABLED
+#define NRFX_TWI_ENABLED 1
+#endif
+// <q> NRFX_TWI0_ENABLED  - Enable TWI0 instance
+ 
+
+#ifndef NRFX_TWI0_ENABLED
+#define NRFX_TWI0_ENABLED 0
+#endif
+
+// <q> NRFX_TWI1_ENABLED  - Enable TWI1 instance
+ 
+
+#ifndef NRFX_TWI1_ENABLED
+#define NRFX_TWI1_ENABLED 1
+#endif
+
+// <o> NRFX_TWI_DEFAULT_CONFIG_FREQUENCY  - Frequency
+ 
+// <26738688=> 100k 
+// <67108864=> 250k 
+// <104857600=> 400k 
+
+#ifndef NRFX_TWI_DEFAULT_CONFIG_FREQUENCY
+#define NRFX_TWI_DEFAULT_CONFIG_FREQUENCY 26738688
+#endif
+
+// <q> NRFX_TWI_DEFAULT_CONFIG_HOLD_BUS_UNINIT  - Enables bus holding after uninit
+ 
+
+#ifndef NRFX_TWI_DEFAULT_CONFIG_HOLD_BUS_UNINIT
+#define NRFX_TWI_DEFAULT_CONFIG_HOLD_BUS_UNINIT 0
+#endif
+
+// <o> NRFX_TWI_DEFAULT_CONFIG_IRQ_PRIORITY  - Interrupt priority
+ 
+// <0=> 0 (highest) 
+// <1=> 1 
+// <2=> 2 
+// <3=> 3 
+// <4=> 4 
+// <5=> 5 
+// <6=> 6 
+// <7=> 7 
+
+#ifndef NRFX_TWI_DEFAULT_CONFIG_IRQ_PRIORITY
+#define NRFX_TWI_DEFAULT_CONFIG_IRQ_PRIORITY 6
+#endif
+
+// <e> NRFX_TWI_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef NRFX_TWI_CONFIG_LOG_ENABLED
+#define NRFX_TWI_CONFIG_LOG_ENABLED 0
+#endif
+// <o> NRFX_TWI_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef NRFX_TWI_CONFIG_LOG_LEVEL
+#define NRFX_TWI_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> NRFX_TWI_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NRFX_TWI_CONFIG_INFO_COLOR
+#define NRFX_TWI_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> NRFX_TWI_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NRFX_TWI_CONFIG_DEBUG_COLOR
+#define NRFX_TWI_CONFIG_DEBUG_COLOR 0
+#endif
+
 // </e>
 
 // </e>
@@ -1425,7 +1592,7 @@
  
 
 #ifndef NRF_FPRINTF_FLAG_AUTOMATIC_CR_ON_LF_ENABLED
-#define NRF_FPRINTF_FLAG_AUTOMATIC_CR_ON_LF_ENABLED 1
+#define NRF_FPRINTF_FLAG_AUTOMATIC_CR_ON_LF_ENABLED 0
 #endif
 
 // <q> NRF_FPRINTF_DOUBLE_ENABLED  - Enable IEEE-754 double precision formatting.
@@ -1597,7 +1764,7 @@
 // <4=> Debug 
 
 #ifndef NRF_LOG_DEFAULT_LEVEL
-#define NRF_LOG_DEFAULT_LEVEL 4
+#define NRF_LOG_DEFAULT_LEVEL 3
 #endif
 
 // <q> NRF_LOG_DEFERRED  - Enable deffered logger.

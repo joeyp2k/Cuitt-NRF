@@ -107,3 +107,28 @@ uint32_t ble_cus_init(ble_cus_t * p_cus, const ble_cus_init_t * p_cus_init)
     // Add Custom Value characteristic
     return custom_value_char_add(p_cus, p_cus_init);
 }
+
+
+
+uint32_t ble_lbs_on_button_change(uint16_t conn_handle, ble_cus_t * p_lbs, uint8_t * button_state)//button_state is the value sent
+{
+    ble_gatts_hvx_params_t params;
+    uint16_t len = 10;
+
+        uint8_t arr[10];
+
+        for(int i = 0; i < 10; i++){
+            printf("Data Array[%d]: %d\n", i, *button_state);
+            arr[i] = *button_state;
+            button_state++;
+        }
+        
+    memset(&params, 0, sizeof(params));
+    params.type   = BLE_GATT_HVX_NOTIFICATION;
+    params.handle = p_lbs->button_char_handles.value_handle;
+    params.offset = 0;    
+    params.p_data = arr;
+    params.p_len  = &len;
+
+    return sd_ble_gatts_hvx(conn_handle, &params);
+}
