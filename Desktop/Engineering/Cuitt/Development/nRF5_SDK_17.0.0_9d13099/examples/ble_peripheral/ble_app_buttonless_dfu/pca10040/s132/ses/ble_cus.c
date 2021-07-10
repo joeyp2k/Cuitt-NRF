@@ -1,7 +1,8 @@
+#include <string.h>
+
 #include "sdk_common.h"
 #include "ble_srv_common.h"
 #include "ble_cus.h"
-#include <string.h>
 #include "nrf_gpio.h"
 #include "boards.h"
 #include "nrf_log.h"

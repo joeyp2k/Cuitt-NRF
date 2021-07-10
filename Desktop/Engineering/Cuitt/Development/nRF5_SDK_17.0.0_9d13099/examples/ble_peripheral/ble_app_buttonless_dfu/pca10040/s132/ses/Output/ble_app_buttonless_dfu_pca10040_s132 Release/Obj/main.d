@@ -112,7 +112,6 @@ Output/ble_app_buttonless_dfu_pca10040_s132\ Release/Obj/main.o: \
  ../../../../../../components/ble/common/ble_conn_state.h \
  ../../../../../../components/libraries/atomic/nrf_atomic.h \
  ../../../../../../components/ble/ble_services/ble_dfu/ble_dfu.h \
- C:/Users/joeyp/Desktop/Engineering/Cuitt/Development/nRF5_SDK_17.0.0_9d13099/examples/ble_peripheral/ble_app_buttonless_dfu/pca10040/s132/ses/ble_cus.h \
  ../../../../../../components/ble/nrf_ble_gatt/nrf_ble_gatt.h \
  ../../../../../../components/ble/nrf_ble_qwr/nrf_ble_qwr.h \
  ../../../../../../components/libraries/fds/fds.h \
@@ -134,12 +133,17 @@ Output/ble_app_buttonless_dfu_pca10040_s132\ Release/Obj/main.o: \
  ../../../../../../components/libraries/balloc/nrf_balloc.h \
  ../../../../../../components/libraries/log/nrf_log_default_backends.h \
  ../../../../../../components/libraries/bootloader/nrf_bootloader_info.h \
+ C:/Users/joeyp/Desktop/Engineering/Cuitt/Development/nRF5_SDK_17.0.0_9d13099/examples/ble_peripheral/ble_app_buttonless_dfu/pca10040/s132/ses/voltage.h \
+ ../../../../../../components/libraries/bsp/bsp.h \
+ C:/Users/joeyp/Desktop/Engineering/Cuitt/Development/nRF5_SDK_17.0.0_9d13099/examples/ble_peripheral/ble_app_buttonless_dfu/pca10040/s132/ses/ble_cus.h \
+ C:/Users/joeyp/Desktop/Engineering/Cuitt/Development/nRF5_SDK_17.0.0_9d13099/examples/ble_peripheral/ble_app_buttonless_dfu/pca10040/s132/ses/twi.h \
  ../../../../../../integration/nrfx/legacy/nrf_drv_twi.h \
  ../../../../../../modules/nrfx/drivers/include/nrfx_twim.h \
  ../../../../../../modules/nrfx/drivers/include/nrfx_twi_twim.h \
  ../../../../../../modules/nrfx/hal/nrf_twim.h \
  ../../../../../../modules/nrfx/drivers/include/nrfx_twi.h \
  ../../../../../../modules/nrfx/hal/nrf_twi.h \
+ C:/Users/joeyp/Desktop/Engineering/Cuitt/Development/nRF5_SDK_17.0.0_9d13099/examples/ble_peripheral/ble_app_buttonless_dfu/pca10040/s132/ses/rtc.h \
  ../../../../../../integration/nrfx/legacy/nrf_drv_rtc.h \
  ../../../../../../modules/nrfx/drivers/include/nrfx_rtc.h \
  ../../../../../../modules/nrfx/hal/nrf_rtc.h

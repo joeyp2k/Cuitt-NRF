@@ -107,6 +107,10 @@
       <file file_name="C:/vault/public_key.c" />
       <file file_name="ble_cus.h" />
       <file file_name="ble_cus.c" />
+      <file file_name="rtc.c" />
+      <file file_name="voltage.c" />
+      <file file_name="voltage.h" />
+      <file file_name="rtc.h" />
     </folder>
     <folder Name="nRF_SVC">
       <file file_name="../../../../../../components/libraries/bootloader/dfu/nrf_dfu_svci.c" />
@@ -146,6 +150,16 @@
       <file file_name="../../../../../../components/softdevice/common/nrf_sdh.c" />
       <file file_name="../../../../../../components/softdevice/common/nrf_sdh_ble.c" />
       <file file_name="../../../../../../components/softdevice/common/nrf_sdh_soc.c" />
+    </folder>
+    <folder Name="I2C">
+      <file file_name="acclrm.c" />
+      <file file_name="acclrm.h" />
+      <file file_name="press.c" />
+      <file file_name="press.h" />
+      <file file_name="twi.c" />
+      <file file_name="twi.h" />
+      <file file_name="rtclk.c" />
+      <file file_name="rtclk.h" />
     </folder>
   </project>
   <configuration
