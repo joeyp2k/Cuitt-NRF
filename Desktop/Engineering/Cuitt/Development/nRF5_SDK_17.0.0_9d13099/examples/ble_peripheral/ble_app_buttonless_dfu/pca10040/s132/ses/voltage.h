@@ -5,7 +5,9 @@
 #define BUTTON_DETECTION_DELAY          APP_TIMER_TICKS(50)   
 
 #define DRAW_BUTTON                BSP_BUTTON_0    
-#define STATBUTTON_BUTTON          BSP_BUTTON_1  
+#define STAT_BUTTON                BSP_BUTTON_1
+#define PRESS_BUTTON               BSP_BUTTON_2  
+#define ACCLRM_BUTTON              BSP_BUTTON_3  
 
 #define BLUE_LED                        BSP_BOARD_LED_0                         /**< Is on when device is advertising. */
 #define RED_LED                         BSP_BOARD_LED_1                         /**< Is on when device has connected. */

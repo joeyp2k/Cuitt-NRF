@@ -89,6 +89,7 @@
 #include "voltage.h"
 #include "twi.h"
 #include "rtc.h" 
+#include "press.h"
 
 #define DEVICE_NAME                     "Nordic_Buttonless"                         /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME               "NordicSemiconductor"                       /**< Manufacturer. Will be passed to Device Information Service. */
@@ -920,6 +921,7 @@ int main(void)
     twi_init();
     nrf_drv_rtc_disable(&rtc);
     nrf_drv_rtc_tick_disable(&rtc);
+    pressure_config();
     advertising_start(erase_bonds);
     
     // Enter main loop.

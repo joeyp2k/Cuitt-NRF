@@ -99,4 +99,7 @@ Output/ble_app_buttonless_dfu_pca10040_s132\ Release/Obj/voltage.o: \
  ../../../../../../modules/nrfx/hal/nrf_twim.h \
  ../../../../../../modules/nrfx/drivers/include/nrfx_twi.h \
  ../../../../../../modules/nrfx/hal/nrf_twi.h \
- C:\Users\joeyp\Desktop\Engineering\Cuitt\Development\nRF5_SDK_17.0.0_9d13099\examples\ble_peripheral\ble_app_buttonless_dfu\pca10040\s132\ses\rtclk.h
+ C:\Users\joeyp\Desktop\Engineering\Cuitt\Development\nRF5_SDK_17.0.0_9d13099\examples\ble_peripheral\ble_app_buttonless_dfu\pca10040\s132\ses\rtclk.h \
+ C:\Users\joeyp\Desktop\Engineering\Cuitt\Development\nRF5_SDK_17.0.0_9d13099\examples\ble_peripheral\ble_app_buttonless_dfu\pca10040\s132\ses\press.h \
+ C:\Users\joeyp\Desktop\Engineering\Cuitt\Development\nRF5_SDK_17.0.0_9d13099\examples\ble_peripheral\ble_app_buttonless_dfu\pca10040\s132\ses\BMP280_DEFS.h \
+ C:\Users\joeyp\Desktop\Engineering\Cuitt\Development\nRF5_SDK_17.0.0_9d13099\examples\ble_peripheral\ble_app_buttonless_dfu\pca10040\s132\ses\acclrm.h

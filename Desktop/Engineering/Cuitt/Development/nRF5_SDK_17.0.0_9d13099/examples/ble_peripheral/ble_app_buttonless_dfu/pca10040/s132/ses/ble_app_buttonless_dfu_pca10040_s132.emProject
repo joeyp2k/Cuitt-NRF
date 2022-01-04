@@ -160,6 +160,12 @@
       <file file_name="twi.h" />
       <file file_name="rtclk.c" />
       <file file_name="rtclk.h" />
+      <file file_name="bmp2.c" />
+      <file file_name="bmp2.h" />
+      <file file_name="bmp2_defs.h" />
+      <file file_name="common.c" />
+      <file file_name="common.h" />
+      <file file_name="sensor_data.c" />
     </folder>
   </project>
   <configuration

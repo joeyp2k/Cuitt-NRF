@@ -6,3 +6,5 @@
 #define OUT_Y_H 0x2B
 #define OUT_Z_L 0x2C
 #define OUT_Z_H 0x2D
+
+void read_acclrm(void);

@@ -5,6 +5,8 @@
 #include "nrf_log.h"
 #include "twi.h"
 #include "rtclk.h"
+#include "press.h"
+#include "acclrm.h"
 
 uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;  
 
@@ -53,6 +55,8 @@ unsigned char z;
 volatile unsigned int dc = 0;//milliseconds
 volatile unsigned char Button = 0;//button pressed value
 volatile unsigned char Button_b = 0;//button pressed value b
+volatile unsigned char Button_c = 0;//button pressed value c
+volatile unsigned char Button_d = 0;//button pressed value d
 uint8_t arr[14];
 
 void log_draw(){
@@ -317,8 +321,20 @@ static void button_event_handler(uint8_t pin_no, uint8_t button_action)
                              }
                 }                     
             break;
-        case STATBUTTON_BUTTON:
+        case STAT_BUTTON:
             check_status();
+            break;
+        case ACCLRM_BUTTON:
+            Button_d = 1 - Button_d;
+            if(Button_d == 1){
+                read_acclrm();
+            }
+            break;
+        case PRESS_BUTTON:
+            Button_c = 1 - Button_c;
+            if(Button_c == 1){
+                read_pressure();
+            }
             break;
         default:
             APP_ERROR_HANDLER(pin_no);
@@ -335,6 +351,8 @@ void buttons_init(void)
     {
         {BSP_BUTTON_0, false, BUTTON_PULL, button_event_handler},
         {BSP_BUTTON_1, false, BUTTON_PULL, button_event_handler},
+        {BSP_BUTTON_2, false, BUTTON_PULL, button_event_handler},
+        {BSP_BUTTON_3, false, BUTTON_PULL, button_event_handler},
     };
 
     err_code = app_button_init(buttons, ARRAY_SIZE(buttons),
