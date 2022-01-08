@@ -82,4 +82,14 @@ Output/ble_app_buttonless_dfu_pca10040_s132\ Release/Obj/rtc.o: \
  ../../../../../../components/ble/common/ble_srv_common.h \
  ../../../../../../components/softdevice/s132/headers/ble_types.h \
  ../../../../../../components/softdevice/s132/headers/ble_gap.h \
- ../../../../../../components/softdevice/s132/headers/ble_gatt.h
+ ../../../../../../components/softdevice/s132/headers/ble_gatt.h \
+ C:\Users\joeyp\Desktop\Engineering\Cuitt\Development\nRF5_SDK_17.0.0_9d13099\examples\ble_peripheral\ble_app_buttonless_dfu\pca10040\s132\ses\sleep.c \
+ ../../../../../../components/libraries/log/nrf_log.h \
+ ../../../../../../components/libraries/util/sdk_common.h \
+ ../../../../../../components/libraries/util/sdk_os.h \
+ ../../../../../../components/libraries/util/app_util.h \
+ ../../../../../../components/libraries/util/sdk_macros.h \
+ ../../../../../../components/libraries/strerror/nrf_strerror.h \
+ ../../../../../../components/libraries/log/src/nrf_log_internal.h \
+ ../../../../../../components/libraries/log/nrf_log_types.h \
+ C:\Users\joeyp\Desktop\Engineering\Cuitt\Development\nRF5_SDK_17.0.0_9d13099\examples\ble_peripheral\ble_app_buttonless_dfu\pca10040\s132\ses\sleep.h

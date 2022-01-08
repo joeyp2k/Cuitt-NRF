@@ -86,15 +86,15 @@
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 #include "nrf_bootloader_info.h"
+#include "nrf_gpio.h"
 #include "voltage.h"
 #include "twi.h"
-#include "rtc.h" 
-#include "press.h"
+#include "rtc.h"
 
 #define DEVICE_NAME                     "Nordic_Buttonless"                         /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME               "NordicSemiconductor"                       /**< Manufacturer. Will be passed to Device Information Service. */
 #define APP_ADV_INTERVAL                300                                         /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
-#define APP_ADV_DURATION                18000                                       /**< The advertising duration (180 seconds) in units of 10 milliseconds. */
+#define APP_ADV_DURATION                3000                                       /**< The advertising duration (180 seconds) in units of 10 milliseconds. */
 //m_conn_handle, &m_cus, arr
 #define APP_BLE_OBSERVER_PRIO           3                                           /**< Application's BLE observer priority. You shouldn't need to modify this value. */
 #define APP_BLE_CONN_CFG_TAG            1                                           /**< A tag identifying the SoftDevice BLE configuration. */
@@ -314,6 +314,14 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
     pm_handler_flash_clean(p_evt);
 }
 
+/**@brief Function for the LEDs initialization.
+ *
+ * @details Initializes all LEDs used by the application.
+ */
+static void leds_init(void)
+{
+    bsp_board_init(BSP_INIT_LEDS);
+}
 
 /**@brief Function for the Timer initialization.
  *
@@ -434,7 +442,7 @@ static void services_init(void)
     ble_cus_init_t                     cus_init;
     
     memset(&cus_init, 0, sizeof(cus_init));
-	
+
     err_code = ble_cus_init(&m_cus, &cus_init);
     APP_ERROR_CHECK(err_code);	
 
@@ -529,13 +537,14 @@ static void application_timers_start(void)
        APP_ERROR_CHECK(err_code); */
 }
 
-
 /**@brief Function for putting the chip into sleep mode.
  *
  * @note This function will not return.
  */
+
 static void sleep_mode_enter(void)
 {
+    NRF_LOG_INFO("Entering Sleep Mode.");
     uint32_t err_code = bsp_indication_set(BSP_INDICATE_IDLE);
 
     APP_ERROR_CHECK(err_code);
@@ -551,6 +560,7 @@ static void sleep_mode_enter(void)
 }
 
 
+
 /**@brief Function for handling advertising events.
  *
  * @details This function will be called for advertising events which are passed to the application.
@@ -564,12 +574,14 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
     switch (ble_adv_evt)
     {
         case BLE_ADV_EVT_FAST:
+            NRF_LOG_INFO("BLE Advertising.");
             err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING);
             APP_ERROR_CHECK(err_code);
             break;
 
         case BLE_ADV_EVT_IDLE:
-            sleep_mode_enter();
+            //sleep_mode_enter();
+            //shake_to_advertise_enable();
             break;
 
         default:
@@ -591,7 +603,6 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
     {
         case BLE_GAP_EVT_DISCONNECTED:
             connected = false;
-            // LED indication will be changed when advertising starts.
             break;
 
         case BLE_GAP_EVT_CONNECTED:
@@ -601,6 +612,7 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
             m_conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
             err_code = nrf_ble_qwr_conn_handle_assign(&m_qwr, m_conn_handle);
             APP_ERROR_CHECK(err_code);
+            NRF_LOG_INFO("Connected.");
             break;
 
         case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
@@ -886,6 +898,9 @@ static void idle_state_handle(void)
     {
         nrf_pwr_mgmt_run();
     }
+    if(sleep){
+        sleep_mode_enter();
+    }
 }
 
 
@@ -899,12 +914,14 @@ int main(void)
     log_init();
 
     // Initialize the async SVCI interface to bootloader before any interrupts are enabled.
-    //    err_code = ble_dfu_buttonless_async_svci_init();
-    //   APP_ERROR_CHECK(err_code);
+    err_code = ble_dfu_buttonless_async_svci_init();
+    APP_ERROR_CHECK(err_code);
+    
+    leds_init();
     timers_init();
+    buttons_init();
     power_management_init();
     //buttons_leds_init(&erase_bonds);
-    buttons_init();
     ble_stack_init();
     peer_manager_init();
     gap_params_init();
@@ -919,10 +936,9 @@ int main(void)
     application_timers_start();
     rtc_config();
     twi_init();
-    nrf_drv_rtc_disable(&rtc);
-    nrf_drv_rtc_tick_disable(&rtc);
-    pressure_config();
-    advertising_start(erase_bonds);
+    nrf_drv_rtc_enable(&rtc);
+    nrf_drv_rtc_tick_enable(&rtc, true);
+    //advertising_start(erase_bonds);
     
     // Enter main loop.
     for (;;)

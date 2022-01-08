@@ -24,18 +24,18 @@ static uint32_t custom_value_char_add(ble_cus_t * p_cus, const ble_cus_init_t * 
     ble_gatts_attr_t    attr_char_value;
     ble_uuid_t          ble_uuid;
     ble_gatts_attr_md_t attr_md;
-
+    //add data transfer characteristic
     memset(&char_md, 0, sizeof(char_md));
 
     char_md.char_props.read   = 1;
     char_md.char_props.write  = 1;
-    char_md.char_props.notify = 0; 
+    char_md.char_props.notify = 1; 
     char_md.p_char_user_desc  = NULL;
     char_md.p_char_pf         = NULL;
     char_md.p_user_desc_md    = NULL;
     char_md.p_cccd_md         = NULL; 
     char_md.p_sccd_md         = NULL;
-		
+
     memset(&attr_md, 0, sizeof(attr_md));
 
     attr_md.read_perm  = p_cus_init->custom_value_char_attr_md.read_perm;
@@ -52,13 +52,53 @@ static uint32_t custom_value_char_add(ble_cus_t * p_cus, const ble_cus_init_t * 
 
     attr_char_value.p_uuid    = &ble_uuid;
     attr_char_value.p_attr_md = &attr_md;
-    attr_char_value.init_len  = sizeof(uint8_t);
+    attr_char_value.init_len  = 14;
     attr_char_value.init_offs = 0;
-    attr_char_value.max_len   = sizeof(uint8_t);
+    attr_char_value.max_len   = 14;
+
 
     err_code = sd_ble_gatts_characteristic_add(p_cus->service_handle, &char_md,
                                                &attr_char_value,
                                                &p_cus->custom_value_handles);
+
+    /*
+    //Add Settings Characteristic
+    memset(&char_md, 0, sizeof(char_md));
+
+    char_md.char_props.read   = 1;
+    char_md.char_props.write  = 1;
+    char_md.char_props.notify = 1;
+    char_md.p_char_user_desc  = NULL;
+    char_md.p_char_pf         = NULL;
+    char_md.p_user_desc_md    = NULL;
+    char_md.p_cccd_md         = NULL; 
+    char_md.p_sccd_md         = NULL;
+
+    memset(&attr_md, 0, sizeof(attr_md));
+
+    attr_md.read_perm  = p_cus_init->custom_value_char_attr_md.read_perm;
+    attr_md.write_perm = p_cus_init->custom_value_char_attr_md.write_perm;
+    attr_md.vloc       = BLE_GATTS_VLOC_STACK;
+    attr_md.rd_auth    = 0;
+    attr_md.wr_auth    = 0;
+    attr_md.vlen       = 0;
+
+    ble_uuid.type = p_cus->uuid_type;
+    ble_uuid.uuid = SETTINGS_CHAR_UUID;
+
+    memset(&attr_char_value, 0, sizeof(attr_char_value));
+
+    attr_char_value.p_uuid    = &ble_uuid;
+    attr_char_value.p_attr_md = &attr_md;
+    attr_char_value.init_len  = 3;
+    attr_char_value.init_offs = 0;
+    attr_char_value.max_len   = 3;
+
+    err_code = sd_ble_gatts_characteristic_add(p_cus->service_handle, &char_md,
+                                           &attr_char_value,
+                                           &p_cus->custom_value_handles);
+    */
+    
     if (err_code != NRF_SUCCESS)
     {
         return err_code;
@@ -114,7 +154,7 @@ uint32_t ble_cus_init(ble_cus_t * p_cus, const ble_cus_init_t * p_cus_init)
 uint32_t ble_lbs_on_button_change(uint16_t conn_handle, ble_cus_t * p_lbs, uint8_t * button_state)//button_state is the value sent
 {
     ble_gatts_hvx_params_t params;
-    uint16_t len = 10;
+    uint16_t len = 14;
 
         uint8_t arr[10];
 

@@ -10,6 +10,7 @@
 
 #define CUSTOM_SERVICE_UUID               0x1400
 #define CUSTOM_VALUE_CHAR_UUID            0x1401
+#define SETTINGS_CHAR_UUID            0x1399
 
 /**@brief   Macro for defining a ble_cus instance.
  *
@@ -25,6 +26,7 @@ typedef struct
 {
     uint8_t                       initial_custom_value;           /**< Initial custom value */
     ble_srv_cccd_security_mode_t  custom_value_char_attr_md;     /**< Initial security level for Custom characteristics attribute */
+
 } ble_cus_init_t;
 
 /**@brief Custom Service structure. This contains various status information for the service. */

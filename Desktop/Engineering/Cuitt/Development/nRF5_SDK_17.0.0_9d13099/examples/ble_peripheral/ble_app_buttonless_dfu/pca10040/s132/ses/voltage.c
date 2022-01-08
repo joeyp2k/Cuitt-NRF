@@ -5,7 +5,6 @@
 #include "nrf_log.h"
 #include "twi.h"
 #include "rtclk.h"
-#include "press.h"
 #include "acclrm.h"
 
 uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;  
@@ -58,15 +57,16 @@ volatile unsigned char Button_b = 0;//button pressed value b
 volatile unsigned char Button_c = 0;//button pressed value c
 volatile unsigned char Button_d = 0;//button pressed value d
 uint8_t arr[14];
+int stack_size = 0;
 
 void log_draw(){
     ret_code_t err_code;
-
+    
     nrf_drv_rtc_enable(&rtc);
     nrf_drv_rtc_tick_enable(&rtc, true);
     z = 0;
+
     //take current time
-    
     uint8_t start_reg[1] = {0x00};//START REGISTER OF TRANSMIT BUFFER
     err_code = nrf_drv_twi_tx(&twi, RTCLK_ADDRESS, start_reg, 1, false);
     APP_ERROR_CHECK(err_code);
@@ -97,8 +97,7 @@ void log_draw(){
 
 void process_packet(){
     ret_code_t err_code;
-    nrf_drv_rtc_disable(&rtc);
-    nrf_drv_rtc_tick_disable(&rtc);
+
     //negate count for miniscule draws to maintain integrity of suggestion
     if(Draw_length < 400){
     DCT--;
@@ -243,13 +242,37 @@ void process_packet(){
 }
 
 void increment_stack(){
-    printf("Increment stack");
+    printf("Increment stack\n");
+    stack_size++;
+    //increase stack
 }
 
 void transmit_packet(){
     ret_code_t err_code;
-    printf("__________BLE transmit attempt___________\n");
     if(connected == true){
+        while(stack_size > 0){
+            //send stack
+            printf("__________BLE transmit attempt___________\n");
+            err_code = ble_lbs_on_button_change(m_conn_handle, &m_cus, arr);
+            if(err_code == NRF_SUCCESS){
+              printf("BLE transmit complete\n");
+              transmit_success = true;
+              stack_size--;
+            }else{
+              printf("BLE transmit failed\n");
+              transmit_success = false;
+              return;
+            }
+            if (err_code != NRF_SUCCESS &&
+            err_code != BLE_ERROR_INVALID_CONN_HANDLE &&
+            err_code != NRF_ERROR_INVALID_STATE &&
+            err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING)
+            {
+                APP_ERROR_CHECK(err_code);
+            }
+        }
+        //send current draw
+        printf("__________BLE transmit attempt___________\n");
         err_code = ble_lbs_on_button_change(m_conn_handle, &m_cus, arr);
         if(err_code == NRF_SUCCESS){
           printf("BLE transmit complete\n");
@@ -270,33 +293,32 @@ void transmit_packet(){
 
 void check_status(){
     Button_b = 1 - Button_b;
-    if(Button_b == 1){
-    printf("STATUS ON\n");
-    nrf_drv_rtc_enable(&rtc);
-    nrf_drv_rtc_tick_enable(&rtc,true);
-    //Current_time();
-    if(Draw_length_total >= DLT_average){
-            printf("DAILY TOTAL EXCEEDED\n");
-            bsp_board_led_on(RED_LED);
-        }
-        else if(Time_between <= Wait_period){
-            printf("WAIT PERIOD NOT == 0\n");
-            bsp_board_led_on(RED_LED);
-        }
-        else{
-            printf("DRAW PERMITTED\n");
-            bsp_board_led_on(BLUE_LED);
-        }
-    while(dc <= 3000){
-        
+    if(dc <= 4000 && stat_press_count == 5){
+            nrf_drv_rtc_disable(&rtc);
+            nrf_drv_rtc_tick_disable(&rtc);
+            dc = 0;
+            stat_press_count = 0;
+            sleep = true;
     }
-    bsp_board_led_off(RED_LED);
-    bsp_board_led_off(BLUE_LED);
-    bsp_board_led_off(GREEN_LED);
-    printf("STATUS OFF\n");
-    nrf_drv_rtc_disable(&rtc);
-    nrf_drv_rtc_tick_disable(&rtc);
-    dc = 0;
+    if(Button_b == 1 && stat_press_count == 0){
+        printf("STATUS ON\n");
+        stat_press_count++;
+        nrf_drv_rtc_enable(&rtc);
+        nrf_drv_rtc_tick_enable(&rtc,true);
+        if(Draw_length_total >= DLT_average){
+                printf("DAILY TOTAL EXCEEDED\n");
+                bsp_board_led_on(RED_LED);
+            }
+            else if(Time_between <= Wait_period){
+                printf("WAIT PERIOD NOT == 0\n");
+                bsp_board_led_on(RED_LED);
+            }
+            else{
+                printf("DRAW PERMITTED\n");
+                bsp_board_led_on(BLUE_LED);
+            }
+    }else if(Button_b == 1){
+        stat_press_count++;
     }
 }
 
@@ -316,9 +338,9 @@ static void button_event_handler(uint8_t pin_no, uint8_t button_action)
             else{
                 process_packet();
                 transmit_packet();
-                             if(transmit_success == true){
-                             increment_stack();
-                             }
+                   if(transmit_success == false){
+                      increment_stack();
+                   }
                 }                     
             break;
         case STAT_BUTTON:
@@ -333,7 +355,7 @@ static void button_event_handler(uint8_t pin_no, uint8_t button_action)
         case PRESS_BUTTON:
             Button_c = 1 - Button_c;
             if(Button_c == 1){
-                read_pressure();
+                //read_pressure();
             }
             break;
         default:

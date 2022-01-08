@@ -1,0 +1,1 @@
+static void sleep_mode_enter(void);
