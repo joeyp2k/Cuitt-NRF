@@ -248,6 +248,9 @@ void increment_stack(){
 }
 
 void transmit_packet(){
+    nrf_drv_rtc_disable(&rtc);
+    nrf_drv_rtc_tick_disable(&rtc);
+
     ret_code_t err_code;
     if(connected == true){
         while(stack_size > 0){
@@ -344,7 +347,7 @@ static void button_event_handler(uint8_t pin_no, uint8_t button_action)
                 }                     
             break;
         case STAT_BUTTON:
-            check_status();
+                check_status();
             break;
         case ACCLRM_BUTTON:
             Button_d = 1 - Button_d;

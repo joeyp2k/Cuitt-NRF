@@ -56,10 +56,7 @@ static uint32_t custom_value_char_add(ble_cus_t * p_cus, const ble_cus_init_t * 
     attr_char_value.init_offs = 0;
     attr_char_value.max_len   = 14;
 
-
-    err_code = sd_ble_gatts_characteristic_add(p_cus->service_handle, &char_md,
-                                               &attr_char_value,
-                                               &p_cus->custom_value_handles);
+    err_code = sd_ble_gatts_characteristic_add(p_cus->service_handle, &char_md,&attr_char_value, &p_cus->custom_value_handles);
 
     /*
     //Add Settings Characteristic
@@ -166,7 +163,7 @@ uint32_t ble_lbs_on_button_change(uint16_t conn_handle, ble_cus_t * p_lbs, uint8
         
     memset(&params, 0, sizeof(params));
     params.type   = BLE_GATT_HVX_NOTIFICATION;
-    params.handle = p_lbs->button_char_handles.value_handle;
+    params.handle = p_lbs->custom_value_handles.value_handle;
     params.offset = 0;    
     params.p_data = arr;
     params.p_len  = &len;

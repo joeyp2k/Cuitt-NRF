@@ -34,7 +34,6 @@ struct ble_cus_s
 {
     uint16_t                      service_handle;                 /**< Handle of Custom Service (as provided by the BLE stack). */
     ble_gatts_char_handles_t      custom_value_handles;           /**< Handles related to the Custom Value characteristic. */
-    ble_gatts_char_handles_t    button_char_handles;
     uint16_t                      conn_handle;                    /**< Handle of the current connection (as provided by the BLE stack, is BLE_CONN_HANDLE_INVALID if not in a connection). */
     uint8_t                       uuid_type; 
 };

@@ -108,6 +108,7 @@
 #define NEXT_CONN_PARAMS_UPDATE_DELAY   APP_TIMER_TICKS(30000)                      /**< Time between each call to sd_ble_gap_conn_param_update after the first call (30 seconds). */
 #define MAX_CONN_PARAMS_UPDATE_COUNT    3                                           /**< Number of attempts before giving up the connection parameter negotiation. */
 
+#define SEC_PARAM_TIMEOUT               30
 #define SEC_PARAM_BOND                  1                                           /**< Perform bonding. */
 #define SEC_PARAM_MITM                  0                                           /**< Man In The Middle protection not required. */
 #define SEC_PARAM_LESC                  0                                           /**< LE Secure Connections not enabled. */
@@ -123,7 +124,7 @@ uint8_t sec, min, hr, day, date, month, year;
 
 NRF_BLE_GATT_DEF(m_gatt);                                                           /**< GATT module instance. */
 NRF_BLE_QWR_DEF(m_qwr);                                                             /**< Context for the Queued Write module.*/
-BLE_ADVERTISING_DEF(m_advertising);                                               /**< Advertising module instance. */
+BLE_ADVERTISING_DEF(m_advertising);                                            /**< Advertising module instance. */
 
 static void advertising_start(bool erase_bonds);                                    /**< Forward declaration of advertising start function */
 
@@ -442,6 +443,9 @@ static void services_init(void)
     ble_cus_init_t                     cus_init;
     
     memset(&cus_init, 0, sizeof(cus_init));
+    // TESTING SET OPEN
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cus_init.custom_value_char_attr_md.read_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cus_init.custom_value_char_attr_md.write_perm);
 
     err_code = ble_cus_init(&m_cus, &cus_init);
     APP_ERROR_CHECK(err_code);	
@@ -936,9 +940,9 @@ int main(void)
     application_timers_start();
     rtc_config();
     twi_init();
-    nrf_drv_rtc_enable(&rtc);
-    nrf_drv_rtc_tick_enable(&rtc, true);
-    //advertising_start(erase_bonds);
+    nrf_drv_rtc_disable(&rtc);
+    nrf_drv_rtc_tick_disable(&rtc);
+    advertising_start(erase_bonds);
     
     // Enter main loop.
     for (;;)
