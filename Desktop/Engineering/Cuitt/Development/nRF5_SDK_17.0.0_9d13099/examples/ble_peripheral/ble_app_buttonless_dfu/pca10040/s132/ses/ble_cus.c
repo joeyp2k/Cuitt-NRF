@@ -7,6 +7,8 @@
 #include "boards.h"
 #include "nrf_log.h"
 
+static ble_cus_t * mp_cus;
+
 
 /**@brief Function for adding the Custom Value characteristic.
  *
@@ -124,6 +126,8 @@ uint32_t ble_cus_init(ble_cus_t * p_cus, const ble_cus_init_t * p_cus_init)
     uint32_t   err_code;
     ble_uuid_t ble_uuid;
 
+    mp_cus = p_cus;
+    
     //Initialize service structure
     p_cus->conn_handle               = BLE_CONN_HANDLE_INVALID;
 
@@ -148,7 +152,7 @@ uint32_t ble_cus_init(ble_cus_t * p_cus, const ble_cus_init_t * p_cus_init)
 
 
 
-uint32_t ble_lbs_on_button_change(uint16_t conn_handle, ble_cus_t * p_lbs, uint8_t * button_state)//button_state is the value sent
+uint32_t ble_lbs_on_button_change(uint16_t conn_handle, uint8_t * button_state)//button_state is the value sent
 {
     ble_gatts_hvx_params_t params;
     uint16_t len = 14;
@@ -156,14 +160,14 @@ uint32_t ble_lbs_on_button_change(uint16_t conn_handle, ble_cus_t * p_lbs, uint8
         uint8_t arr[10];
 
         for(int i = 0; i < 10; i++){
-            printf("Data Array[%d]: %d\n", i, *button_state);
+            //printf("Data Array[%d]: %d\n", i, *button_state);
             arr[i] = *button_state;
             button_state++;
         }
         
     memset(&params, 0, sizeof(params));
     params.type   = BLE_GATT_HVX_NOTIFICATION;
-    params.handle = p_lbs->custom_value_handles.value_handle;
+    params.handle = mp_cus->custom_value_handles.value_handle;
     params.offset = 0;    
     params.p_data = arr;
     params.p_len  = &len;

@@ -3,3 +3,4 @@
 extern uint8_t rtclk_data[8];
 
 uint8_t bcdToDec(uint8_t val);
+void utcToRTClk(uint64_t utc);

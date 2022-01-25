@@ -13,15 +13,13 @@
 #define RED_LED                         BSP_BOARD_LED_1                         /**< Is on when device has connected. */
 #define GREEN_LED                       BSP_BOARD_LED_2   
 
-BLE_CUS_DEF(m_cus);                          /**< Handle of the current connection. */
-
-extern uint16_t Draw_length;
-extern uint16_t Draw_length_average;
-extern uint16_t Draw_length_total;
-extern uint16_t DLT_average;
-extern unsigned int Suggestion;
-extern uint32_t Wait_period;
-extern uint32_t Time_between;
+extern uint8_t draw_length;
+extern uint16_t draw_length_average;
+extern uint16_t draw_length_total;
+extern uint16_t draw_length_total_average;
+extern unsigned int suggestion;
+extern uint32_t wait_period;
+extern uint32_t time_between;
 extern bool voltage_lock;
 extern bool auto_lock;
 extern bool connected;

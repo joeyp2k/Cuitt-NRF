@@ -43,4 +43,4 @@ typedef struct ble_cus_s ble_cus_t;
 
 uint32_t ble_cus_init(ble_cus_t * p_cus, const ble_cus_init_t * p_cus_init);
 
-uint32_t ble_lbs_on_button_change(uint16_t conn_handle, ble_cus_t * p_lbs, uint8_t * button_state);
+uint32_t ble_lbs_on_button_change(uint16_t conn_handle, uint8_t * button_state);
