@@ -95,7 +95,7 @@
 #define MANUFACTURER_NAME               "NordicSemiconductor"                       /**< Manufacturer. Will be passed to Device Information Service. */
 #define APP_ADV_INTERVAL                300                                         /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
 #define APP_ADV_DURATION                3000                                       /**< The advertising duration (180 seconds) in units of 10 milliseconds. */
-//m_conn_handle, &m_cus, arr
+
 #define APP_BLE_OBSERVER_PRIO           3                                           /**< Application's BLE observer priority. You shouldn't need to modify this value. */
 #define APP_BLE_CONN_CFG_TAG            1                                           /**< A tag identifying the SoftDevice BLE configuration. */
 
@@ -420,6 +420,31 @@ static void nrf_qwr_error_handler(uint32_t nrf_error)
     }
    }*/
 
+static void on_cus_evt(ble_cus_t     * p_cus_service,
+                       ble_cus_evt_t * p_evt)
+{
+
+    switch(p_evt->evt_type)
+    {
+        case BLE_CUS_EVT_NOTIFICATION_ENABLED:
+            break;
+
+        case BLE_CUS_EVT_NOTIFICATION_DISABLED:
+            break;
+
+        case BLE_CUS_EVT_CONNECTED :
+            break;
+
+        case BLE_CUS_EVT_DISCONNECTED:
+            break;
+
+        default:
+              // No implementation needed.
+              break;
+    }
+}
+
+
 
 /**@brief Function for initializing services that will be used by the application.
  */
@@ -442,9 +467,11 @@ static void services_init(void)
 
     // Initialize CUS Service init structure to zero.
     ble_cus_init_t                     cus_init;
+
+    cus_init.evt_handler                = on_cus_evt;
     
     memset(&cus_init, 0, sizeof(cus_init));
-    // TESTING SET OPEN
+
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cus_init.custom_value_char_attr_md.read_perm);
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cus_init.custom_value_char_attr_md.write_perm);
 
@@ -648,7 +675,10 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
                                              BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
             APP_ERROR_CHECK(err_code);
             break;
-
+        case BLE_GATTS_EVT_WRITE:
+           NRF_LOG_INFO("Received Write");
+           on_write(&m_cus, p_ble_evt);
+           break;
         default:
             // No implementation needed.
             break;

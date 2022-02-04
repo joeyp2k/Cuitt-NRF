@@ -44,7 +44,7 @@ volatile unsigned char Button = 0;//button pressed value
 volatile unsigned char Button_b = 0;//button pressed value b
 volatile unsigned char Button_c = 0;//button pressed value c
 volatile unsigned char Button_d = 0;//button pressed value d
-uint8_t arr[14];
+uint8_t arr[10];
 int stack_size = 0;
 
 void log_draw(){

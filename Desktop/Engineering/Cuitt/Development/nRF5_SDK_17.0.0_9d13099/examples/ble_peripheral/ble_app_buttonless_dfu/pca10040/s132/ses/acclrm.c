@@ -2,9 +2,7 @@
 #include "app_error.h"
 #include "twi.h"
 
-void read_acclrm(void){
-    uint8_t acclrm_data[8] = {0x00};
-
+void init_acclrm(void){
     ret_code_t err_code;
 
     printf("CONFIGURING ACCELEROMETER\n");
@@ -18,6 +16,12 @@ void read_acclrm(void){
         err_code = nrf_drv_twi_tx(&twi, ACCLRM_ADDRESS, config_buffer, sizeof(config_buffer), false);
         APP_ERROR_CHECK(err_code);  
     }
+}
+
+void read_acclrm(void){
+    uint8_t acclrm_data[8] = {0x00};
+
+    ret_code_t err_code;
 
     printf("READING ACCELEROMETER\n");
     uint8_t start_register[3] = {0x29, 0x2B, 0x2D};
